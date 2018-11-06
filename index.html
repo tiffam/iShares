@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!--Import Google Icon Font-->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!--Import materialize.css-->
+  <link type="text/css" rel="stylesheet" href="css/materialize.min.css" media="screen,projection" />
+  <script src="vue.js"></script>
+  <!--Let browser know website is optimized for mobile-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+
+<body>
+
+  <div id="app">
+    <div class="outline z-depth-1">
+      <div class="image"></div>
+      <h5>Transition allowance <span v-if="!calculated">calculator</span></h5>
+      <div class="content" v-if="!calculated" key="1">
+        <p>Your monthly SOS contribution:<input v-model="SOS" v-focus v-on:keyup.enter="next()" type="number"></p>
+        <p>Your monthly iShares contribution:<input id="input2" v-model="iShares" type="number" v-on:keyup.enter="calculateAllowance()"></p>
+        <button class="red btn" @click="calculateAllowance">Calculate</button>
+      </div>
+      <div v-if="calculated" class="result" key="2">
+        <p>You'll get<span class="amount z-depth-2">${{ transitionAllowance }}</span></p>
+        <button class="btn red" @click="reset"><i class="material-icons">refresh</i></button>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>
+<script>
+
+  new Vue({
+    el: '#app',
+    data: {
+      iShares: "",
+      SOS: "",
+      transitionAllowance: 0,
+      calculated: false
+    },
+    methods: {
+      calculateAllowance: function () {
+        this.calculated = true;
+        let SOS = Number(this.SOS);
+        let iShares = Number(this.iShares);
+        if (SOS === iShares) {
+          this.transitionAllowance = 0.25 * iShares;
+        }
+        else if (SOS > 1000 && iShares === 1000) {
+          this.transitionAllowance = (0.5 * SOS) - (0.25 * iShares);
+        }
+
+        else if (SOS < iShares) {
+          this.transitionAllowance = Math.max(0, 0.5 * SOS - 0.25 * iShares);
+
+        } else {
+          this.transitionAllowance = 0.25 * iShares;
+        }
+      },
+      next: function () {
+        document.getElementById('input2').focus();
+      },
+      reset: function () {
+        this.SOS = "";
+        this.iShares = "";
+        this.transitionAllowance = 0;
+        this.calculated = false
+      }
+    },
+    directives: {
+      focus: {
+        // directive definition
+        inserted: function (el) {
+          el.focus()
+        }
+      }
+    }
+  })
+
+
+
+</script>
+
+
+
+<style>
+  .image {
+    background-image: url(image.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 150px;
+    width: 250px;
+    margin: 0 auto;
+    margin-top: 5px;
+    border-radius: 20px;
+  }
+
+  h5 {
+    text-align: center;
+    font-size: 1.1em;
+    font-weight: 800;
+  }
+
+  p {
+    font-size: 0.9em;
+  }
+
+  .outline {
+    background-color: #FEFAEF;
+    width: 320px;
+    height: 400px;
+    padding: 15px;
+    border-radius: 30px;
+    margin: 0 auto;
+    border: 10px outset #FED992;
+    margin-top: 10vh;
+    text-align: center;
+  }
+
+  /* label underline focus color */
+  input:focus {
+    border-bottom: 1px solid red !important;
+    box-shadow: 0 1px 0 0 red !important
+  }
+
+  .btn {
+    margin: 0 auto;
+  }
+
+  .result {
+    text-align: center;
+  }
+
+  .amount {
+    width: 80px;
+    height: 80px;
+    border-radius: 50px;
+    font-weight: 800;
+    display: inline-block;
+    padding-top: 30px;
+    margin: 0 10px;
+    margin-bottom: 15px;
+  }
+
+  button {
+    border: none;
+    background-color: #FEFAEF;
+    color: #AF0F33;
+    width: 120px;
+  }
+
+  button:focus {
+    background-color: #FEFAEF;
+  }
+
+  input {
+    height: 2em !important;
+    width: 50px !important;
+  }
+</style>
