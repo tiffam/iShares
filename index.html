@@ -14,7 +14,7 @@
 <body>
 
   <div id="app">
-    <div class="outline z-depth-1">
+    <div class="wrapper z-depth-1">
       <div class="image"></div>
       <h5>Transition allowance <span v-if="!calculated">calculator</span></h5>
       <div class="content" v-if="!calculated" key="1">
@@ -109,9 +109,9 @@
     font-size: 0.9em;
   }
 
-  .outline {
+  .wrapper {
     background-color: #FEFAEF;
-    width: 320px;
+    width: 330px;
     height: 400px;
     padding: 15px;
     border-radius: 30px;
@@ -160,5 +160,6 @@
   input {
     height: 2em !important;
     width: 50px !important;
+    margin-left: 5px !important;
   }
 </style>
