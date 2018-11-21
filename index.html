@@ -2,8 +2,6 @@
 <html>
 
 <head>
-  <!--Import Google Icon Font-->
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <!--Import materialize.css-->
   <link type="text/css" rel="stylesheet" href="css/materialize.min.css" media="screen,projection" />
   <script src="vue.js"></script>
@@ -15,17 +13,20 @@
 
   <div id="app">
     <div class="wrapper z-depth-1">
-      <div class="image"></div>
-      <h5>Transition allowance <span v-if="!calculated">calculator</span></h5>
-      <div class="content" v-if="!calculated" key="1">
-        <p>Your monthly SOS contribution:<input v-model="SOS" v-focus v-on:keyup.enter="next()" type="number"></p>
-        <p>Your monthly iShares contribution:<input id="input2" v-model="iShares" type="number" v-on:keyup.enter="calculateAllowance()"></p>
+      
+      <h5>Transition allowance <span v-if="!calculated">calculator <br><span class="small-fonts">(for SG Shares Ownership Scheme participants only)</span></span></h5>
+      <div class="content" v-if="!calculated">
+        <p>Your monthly SOS contribution: $<input v-model="sos" v-focus v-on:keyup.enter="next()" type="number"></p>
+        <p v-if="errorSos" class="warning">{{ errorSos }}</p>
+        <p>Your monthly iShares contribution: $<input id="input2" v-model="iShares" type="number" v-on:keyup.enter="calculateAllowance()"></p>
+        <p v-if="erroriShares" class="warning">{{ erroriShares }}</p>
         <button class="red btn" @click="calculateAllowance">Calculate</button>
       </div>
-      <div v-if="calculated" class="result" key="2">
-        <p>You'll get<span class="amount z-depth-2">${{ transitionAllowance }}</span></p>
+      <div v-if="calculated" class="result">
+        <p>You'll get<span class="amount z-depth-2">${{ transitionAllowance }}</span>per month.</p>
         <button class="btn red" @click="reset"><i class="material-icons">refresh</i></button>
       </div>
+      <div class="image"></div>
     </div>
   </div>
 
@@ -38,37 +39,52 @@
     el: '#app',
     data: {
       iShares: "",
-      SOS: "",
+      sos: "",
       transitionAllowance: 0,
-      calculated: false
+      calculated: false,
+      errorSos: false,
+      erroriShares: false
     },
     methods: {
       calculateAllowance: function () {
-        this.calculated = true;
-        let SOS = Number(this.SOS);
+        this.erroriShares = false;
+        
+        let sos = Number(this.sos);
         let iShares = Number(this.iShares);
-        if (SOS === iShares) {
-          this.transitionAllowance = 0.25 * iShares;
-        }
-        else if (SOS > 1000 && iShares === 1000) {
-          this.transitionAllowance = (0.5 * SOS) - (0.25 * iShares);
-        }
+        let miniShares = 50;
+        let maxiShares = 1000;
+ 
+        if (iShares >= miniShares && iShares <= maxiShares) {
+          this.calculated = true;
+          if (sos === iShares) {
+            this.transitionAllowance = (0.25 * iShares).toFixed(2);
+          }
+          else if (sos > 1000 && iShares === 1000) {
+            this.transitionAllowance = ((0.5 * sos) - (0.25 * iShares)).toFixed(2);
+          }
 
-        else if (SOS < iShares) {
-          this.transitionAllowance = Math.max(0, 0.5 * SOS - 0.25 * iShares);
-
-        } else {
-          this.transitionAllowance = 0.25 * iShares;
-        }
+          else if (sos < iShares) {
+            this.transitionAllowance = (Math.max(0, 0.5 * sos - 0.25 * iShares)).toFixed(2);
+          } 
+          else {
+            this.transitionAllowance = (0.25 * iShares).toFixed(2);
+          }
+        } 
+        
+        else {
+            this.erroriShares = 'Your monthly iShares contribution has to be within the range from $50 up to 10% of your monthly salary, capped at $1000.';
+          }
       },
       next: function () {
         document.getElementById('input2').focus();
       },
       reset: function () {
-        this.SOS = "";
+        this.sos = "";
         this.iShares = "";
         this.transitionAllowance = 0;
-        this.calculated = false
+        this.calculated = false,
+        this.erroriShares = false,
+        this.errorSos = false
       }
     },
     directives: {
@@ -82,44 +98,110 @@
   })
 
 
-
 </script>
 
-
-
 <style>
+
+  @font-face {
+    font-family:"Open Sans bold";
+    /* src: url("./font/OpenSans-Regular.ttf"); */
+    src: url("./font/OpenSans-ExtraBold.ttf");
+  }
+
+  @font-face {
+    font-family:"Open Sans";
+    src: url("./font/OpenSans-Regular.ttf");
+
+  }
+
+  @font-face {
+    font-family:"Open Sans SemiBold";
+    src: url("./font/OpenSans-SemiBold.ttf");
+
+  }
+
+  @font-face {
+    font-family: 'Material Icons';
+    font-style: normal;
+    font-weight: 400;
+    src: url(./icons/MaterialIcons-Regular.eot); /* For IE6-8 */
+    src: local('Material Icons'),
+         local('MaterialIcons-Regular'),
+         url(./icons/MaterialIcons-Regular.woff2) format('woff2'),
+         url(./icons/MaterialIcons-Regular.woff) format('woff'),
+         url(./icons/MaterialIcons-Regular.ttf) format('truetype');
+  }
+  
+  .material-icons {
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;  /* Preferred icon size */
+    display: inline-block;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+  
+    /* Support for all WebKit browsers. */
+    -webkit-font-smoothing: antialiased;
+    /* Support for Safari and Chrome. */
+    text-rendering: optimizeLegibility;
+  
+    /* Support for Firefox. */
+    -moz-osx-font-smoothing: grayscale;
+  
+    /* Support for IE. */
+    font-feature-settings: 'liga';
+  }
+
+  body {
+    font-family: "Open Sans";
+  }
+
   .image {
     background-image: url(image.png);
     background-repeat: no-repeat;
     background-size: cover;
-    height: 150px;
-    width: 250px;
+    height: 180px;
     margin: 0 auto;
-    margin-top: 5px;
+    border-radius: 20px;    
+  }
+
+    .wrapper {
+    background-color: #C2E8E9;
+    width: 450px;
     border-radius: 20px;
-  }
-
-  h5 {
-    text-align: center;
-    font-size: 1.1em;
-    font-weight: 800;
-  }
-
-  p {
-    font-size: 0.9em;
-  }
-
-  .wrapper {
-    background-color: #FEFAEF;
-    width: 330px;
-    height: 400px;
-    padding: 15px;
-    border-radius: 30px;
     margin: 0 auto;
     border: 10px outset #FED992;
     margin-top: 10vh;
     text-align: center;
   }
+
+  h5 {
+    text-align: center;
+    font-size: 1.3em;
+    font-weight: 800;
+    padding-top: 10px;
+  }
+
+  .small-fonts {
+    font-size: 0.8em;
+  }
+
+  p {
+    font-size: 1em;
+    padding: 0;
+    margin: 0;
+  }
+
+  .content, .result {
+    padding: 20px;
+    height: 200px;
+  }
+
 
   /* label underline focus color */
   input:focus {
@@ -136,14 +218,14 @@
   }
 
   .amount {
-    width: 80px;
-    height: 80px;
+    width: 73px;
+    height: 73px;
     border-radius: 50px;
     font-weight: 800;
     display: inline-block;
-    padding-top: 30px;
+    padding-top: 28px;
     margin: 0 10px;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
   }
 
   button {
@@ -151,6 +233,7 @@
     background-color: #FEFAEF;
     color: #AF0F33;
     width: 120px;
+    padding-top: 10px;
   }
 
   button:focus {
@@ -159,7 +242,13 @@
 
   input {
     height: 2em !important;
-    width: 50px !important;
+    width: 55px !important;
     margin-left: 5px !important;
+  }
+
+  .warning {
+    color: red;
+    font-size: 0.8em;
+    padding-bottom: 5px;
   }
 </style>
