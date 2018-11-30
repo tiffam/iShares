@@ -56,10 +56,8 @@
  
         if (iShares >= miniShares && iShares <= maxiShares) {
           this.calculated = true;
-          if (sos === iShares) {
-            this.transitionAllowance = (0.25 * iShares).toFixed(2);
-          }
-          else if (sos > 1000 && iShares === 1000) {
+
+          if (sos > 1000 && iShares === 1000) {
             this.transitionAllowance = ((0.5 * sos) - (0.25 * iShares)).toFixed(2);
           }
 
@@ -97,27 +95,23 @@
     }
   })
 
-
 </script>
 
 <style>
 
   @font-face {
     font-family:"Open Sans bold";
-    /* src: url("./font/OpenSans-Regular.ttf"); */
     src: url("./font/OpenSans-ExtraBold.ttf");
   }
 
   @font-face {
     font-family:"Open Sans";
     src: url("./font/OpenSans-Regular.ttf");
-
   }
 
   @font-face {
     font-family:"Open Sans SemiBold";
     src: url("./font/OpenSans-SemiBold.ttf");
-
   }
 
   @font-face {
@@ -170,7 +164,7 @@
     border-radius: 20px;    
   }
 
-    .wrapper {
+  .wrapper {
     background-color: #C2E8E9;
     width: 450px;
     border-radius: 20px;
@@ -202,8 +196,6 @@
     height: 200px;
   }
 
-
-  /* label underline focus color */
   input:focus {
     border-bottom: 1px solid red !important;
     box-shadow: 0 1px 0 0 red !important
